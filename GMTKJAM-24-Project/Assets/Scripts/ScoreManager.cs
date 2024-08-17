@@ -9,8 +9,6 @@ public class ScoreManager : MonoBehaviour
 {
     public TextMeshProUGUI scoreText;
     public int score;
-    GameObject scoreBoard = GameObject.FindWithTag("scoreBoard");
-    GameObject player = GameObject.Find("Player");
     public StartMovement thePlayer;
     // Start is called before the first frame update
     void Start()
@@ -20,6 +18,8 @@ public class ScoreManager : MonoBehaviour
             Debug.Log("Player doesn't exit");
         }
 
+        GameObject player = GameObject.Find("Player");
+        //GameObject scoreBoard = GameObject.FindWithTag("scoreBoard");
         thePlayer = player.GetComponent<StartMovement>();
         score = thePlayer.score;
     }
