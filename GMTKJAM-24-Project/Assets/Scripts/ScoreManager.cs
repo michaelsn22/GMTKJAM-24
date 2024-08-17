@@ -19,9 +19,13 @@ public class ScoreManager : MonoBehaviour
         {
             Debug.Log("Player doesn't exit");
         }
+        else 
+        {
+            thePlayer = player.GetComponent<StartMovement>();
+            score = thePlayer.score;
+        }
 
-        thePlayer = player.GetComponent<StartMovement>();
-        score = thePlayer.score;
+        
     }
 
     // Update is called once per frame
