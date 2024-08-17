@@ -10,11 +10,12 @@ public class StartMovement : MonoBehaviour
     public bool isGrounded;
     public Transform groundCheck;
     public float groundDistance = 0.4f;
-
     public Transform cam;
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
     public float speed = 6f;
+    public int score = 0;
+    public bool gameOver = false;
     public float burstValueUpwards = 20f;
 
     [SerializeField] private LayerMask groundMask;
@@ -117,6 +118,10 @@ public class StartMovement : MonoBehaviour
         {
             return;
         }
+        else
+        {
+            score +=  10;
+        }
 
         // Calculate the new scale
         Vector3 newScale = gameObject.transform.localScale * (1f + scaleIncrease);
@@ -184,6 +189,18 @@ public class StartMovement : MonoBehaviour
         {
             float distanceToGround = hit.distance;
             //Debug.Log(distanceToGround);
+        }
+    }
+
+    private int IsGameOver()
+    {
+        if (gameOver)
+        {
+            return score;
+        }
+        else
+        {
+            return score;
         }
     }
 }
