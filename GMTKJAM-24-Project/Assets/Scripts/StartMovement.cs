@@ -5,48 +5,42 @@ using UnityEngine;
 
 public class StartMovement : MonoBehaviour
 {
-    private CharacterController controller;
-    private Vector3 playerVelocity;
-    private bool groundedPlayer;
-    public float playerSpeed = 3.0f;
-    public float jumpHeight = 1.0f;
-    public float gravityValue = -5.45f;
-    // Start is called before the first frame update
+    private float horizontalVal;
+    private float verticalVal;
+    private Rigidbody rb;
+    public float burstValue = 20f;
+    public bool isGrounded; // Variable to check if the character is on the ground
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+
+    [SerializeField] private LayerMask groundMask;
     void Start()
     {
-        controller = gameObject.AddComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
         movePlayer();
     }
 
     private void movePlayer()
     {
-        //is the slime grounded
-        groundedPlayer = controller.isGrounded;
-        if(groundedPlayer && playerVelocity.y < 0)
-        {
-            playerVelocity.y = 0f;
-        }
-
-        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        controller.Move(move * Time.deltaTime * playerSpeed);
-       
-        if (move != Vector3.zero)
-        {
-            gameObject.transform.forward = move;
-        }
+        horizontalVal = Input.GetAxis("Horizontal");
+        verticalVal = Input.GetAxis("Vertical");
 
        //slime moving?
-        if (Input.GetButtonDown("Jump") && groundedPlayer)
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+            Debug.Log("jumping");
+            rb.AddForce(transform.up * burstValue, ForceMode.Impulse);
         }
 
-        playerVelocity.y += gravityValue * Time.deltaTime;
-        controller.Move(playerVelocity * Time.deltaTime);
+        Vector3 movementVector = new Vector3(horizontalVal, 0f, verticalVal);
+
+        rb.AddForce(movementVector * burstValue);
     }
 }
