@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Cinemachine;
 
 public class StartMovement : MonoBehaviour
 {
@@ -24,7 +25,16 @@ public class StartMovement : MonoBehaviour
     //scaling vars
     public float scaleIncrease = 0.3f; // 30% increase
     private Vector3 originalScale;
-    private bool hasScaled = false;
+
+    private int scaleCounter = 0; //int to track how many times we have been scaled. this is the best way i can think to handle when we get to high scale values.
+
+    public CinemachineFreeLook freeLookCamera;
+
+    //audio stuff
+    [SerializeField] private AudioSource MainAudioSource;
+    [SerializeField] private AudioClip slimeNoise;
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -39,7 +49,7 @@ public class StartMovement : MonoBehaviour
         movement = new Vector3(horizontal, 0f, vertical).normalized;
 
         // Jump input detection
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && CheckGroundDistance())//isGrounded
         {
             jumpRequested = true;
         }
@@ -54,7 +64,12 @@ public class StartMovement : MonoBehaviour
         {
             Jump();
             jumpRequested = false;
+            MainAudioSource.PlayOneShot(slimeNoise);
         }
+
+        //Debug.Log(CheckGroundDistance()); //check if we are considered to be touching the ground, including coyote time.
+        //CheckGroundDistance2(); //check raw distance.
+        //Debug.Log(rb.velocity.y); //check vertical velocity.
     }
 
     void MovePlayer()
@@ -77,15 +92,26 @@ public class StartMovement : MonoBehaviour
 
     void Jump()
     {
-        Debug.Log("jumping");
+        //Debug.Log("jumping");
+        rb.velocity = new Vector3(0, 0f, 0);
+        //Debug.Log(rb.velocity.y);
         rb.AddForce(transform.up * burstValueUpwards, ForceMode.Impulse);
     }
 
     void OnCollisionEnter(Collision collision)
     {
+        //we probably need to alter movement speed for the bigger slime object?
+        
+        MainAudioSource.PlayOneShot(slimeNoise);
+
+        if (scaleCounter >= 16)
+        {
+            //lets just stop at this size for now...
+            return;
+        }
         string collidedObjectName = "";
         collidedObjectName = collision.gameObject.name;
-        Debug.Log("We collided with "+collision.gameObject.name);
+        //Debug.Log("We collided with "+collision.gameObject.name);
 
         if (collidedObjectName.Contains("Plane"))
         {
@@ -97,10 +123,67 @@ public class StartMovement : MonoBehaviour
         
         // Apply the new scale
         transform.localScale = newScale;
-        
-        // Mark as scaled to prevent multiple scales
-        hasScaled = true;
 
-        Debug.Log("Object scaled up by 30%");
+        //Debug.Log("Object scaled up by 30%");
+
+        scaleCounter++;
+        //Debug.Log("scaleCounter = "+scaleCounter);
+
+        //handle cam stuff
+        if (scaleCounter <= 11)
+        {
+            // Increase the radius of the TopRig orbit
+            freeLookCamera.m_Orbits[0].m_Radius += 2f;
+
+            // Increase the radius of the MiddleRig orbit
+            freeLookCamera.m_Orbits[1].m_Radius += 2f;
+
+            // Increase the radius of the BottomRig orbit
+            freeLookCamera.m_Orbits[2].m_Radius += 2f;
+
+            return;
+        }
+
+        // Increase the radius of the TopRig orbit
+        freeLookCamera.m_Orbits[0].m_Radius += 10f;
+
+        // Increase the radius of the MiddleRig orbit
+        freeLookCamera.m_Orbits[1].m_Radius += 10f;
+
+        // Increase the radius of the BottomRig orbit
+        freeLookCamera.m_Orbits[2].m_Radius += 10f;
+    }
+
+
+    //method to check if we are a certain distance from the ground.
+    private bool CheckGroundDistance()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(groundCheck.position, Vector3.down, out hit))
+        {
+            float distanceToGround = hit.distance;
+            if (distanceToGround <= 0.4f || distanceToGround <= 2f && rb.velocity.y <= -13f)
+            {
+                //Debug.Log("Distance to ground is below 3f: " + distanceToGround);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    private void CheckGroundDistance2()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(groundCheck.position, Vector3.down, out hit))
+        {
+            float distanceToGround = hit.distance;
+            //Debug.Log(distanceToGround);
+        }
     }
 }
