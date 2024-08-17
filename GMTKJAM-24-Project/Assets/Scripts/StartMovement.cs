@@ -8,7 +8,10 @@ public class StartMovement : MonoBehaviour
 {
     private Rigidbody rb;
     public bool isGrounded;
-    public Transform groundCheck;
+    public bool isGroundedCenter;
+    public bool isGroundedLeft;
+    public bool isGroundedRight;
+    public Transform groundCheckCenter, groundCheckLeft, groundCheckRight;
     public float groundDistance = 0.4f;
     public Transform cam;
     public float turnSmoothTime = 0.1f;
@@ -50,12 +53,16 @@ public class StartMovement : MonoBehaviour
         movement = new Vector3(horizontal, 0f, vertical).normalized;
 
         // Jump input detection
-        if (Input.GetKeyDown(KeyCode.Space) && CheckGroundDistance())//isGrounded
+        if (Input.GetKeyDown(KeyCode.Space) && CheckGroundDistance() || Input.GetKeyDown(KeyCode.Space) && isGrounded)//isGrounded
         {
             jumpRequested = true;
         }
 
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        isGroundedCenter = Physics.CheckSphere(groundCheckCenter.position, groundDistance, groundMask);
+        isGroundedLeft = Physics.CheckSphere(groundCheckLeft.position, groundDistance, groundMask);
+        isGroundedRight = Physics.CheckSphere(groundCheckRight.position, groundDistance, groundMask);
+
+        isGrounded = isGroundedCenter || isGroundedLeft || isGroundedRight;
     }
 
     void FixedUpdate()
@@ -105,10 +112,22 @@ public class StartMovement : MonoBehaviour
         
         MainAudioSource.PlayOneShot(slimeNoise);
 
-        if (scaleCounter >= 16)
+        if (scaleCounter >= 35)
         {
             //lets just stop at this size for now...
             return;
+        }
+
+        if (scaleCounter >= 16 && scaleCounter < 28)
+        {
+            burstValueUpwards += 2f;
+            speed += 5f;
+        }
+
+        if (scaleCounter >= 28)
+        {
+            burstValueUpwards += 8f;
+            speed += 15f;
         }
         string collidedObjectName = "";
         collidedObjectName = collision.gameObject.name;
@@ -149,14 +168,29 @@ public class StartMovement : MonoBehaviour
             return;
         }
 
+
+        if (scaleCounter >= 12 && scaleCounter <= 25)
+        {
+            // Increase the radius of the TopRig orbit
+            freeLookCamera.m_Orbits[0].m_Radius += 30f;
+
+            // Increase the radius of the MiddleRig orbit
+            freeLookCamera.m_Orbits[1].m_Radius += 30f;
+
+            // Increase the radius of the BottomRig orbit
+            freeLookCamera.m_Orbits[2].m_Radius += 30f;
+            return;
+        }
+        
+        groundDistance = 4f;
         // Increase the radius of the TopRig orbit
-        freeLookCamera.m_Orbits[0].m_Radius += 10f;
+        freeLookCamera.m_Orbits[0].m_Radius += 500f;
 
         // Increase the radius of the MiddleRig orbit
-        freeLookCamera.m_Orbits[1].m_Radius += 10f;
+        freeLookCamera.m_Orbits[1].m_Radius += 500f;
 
         // Increase the radius of the BottomRig orbit
-        freeLookCamera.m_Orbits[2].m_Radius += 10f;
+        freeLookCamera.m_Orbits[2].m_Radius += 500f;
     }
 
 
@@ -164,7 +198,7 @@ public class StartMovement : MonoBehaviour
     private bool CheckGroundDistance()
     {
         RaycastHit hit;
-        if (Physics.Raycast(groundCheck.position, Vector3.down, out hit))
+        if (Physics.Raycast(groundCheckCenter.position, Vector3.down, out hit))
         {
             float distanceToGround = hit.distance;
             if (distanceToGround <= 0.4f || distanceToGround <= 2f && rb.velocity.y <= -13f)
@@ -185,7 +219,7 @@ public class StartMovement : MonoBehaviour
     private void CheckGroundDistance2()
     {
         RaycastHit hit;
-        if (Physics.Raycast(groundCheck.position, Vector3.down, out hit))
+        if (Physics.Raycast(groundCheckCenter.position, Vector3.down, out hit))
         {
             float distanceToGround = hit.distance;
             //Debug.Log(distanceToGround);
