@@ -20,11 +20,13 @@ public class StartMovement : MonoBehaviour
     public int score = 0;
     public bool gameOver = false;
     public float burstValueUpwards = 20f;
+    public float dashSpeed = 500f;
 
     [SerializeField] private LayerMask groundMask;
 
     private Vector3 movement;
     private bool jumpRequested = false;
+    private bool dashRequested = false;
 
     //scaling vars
     public float scaleIncrease = 0.3f; // 30% increase
@@ -57,6 +59,7 @@ public class StartMovement : MonoBehaviour
         {
             jumpRequested = true;
         }
+        dashRequested = !!Input.GetKeyDown(KeyCode.LeftShift);
 
         isGroundedCenter = Physics.CheckSphere(groundCheckCenter.position, groundDistance, groundMask);
         isGroundedLeft = Physics.CheckSphere(groundCheckLeft.position, groundDistance, groundMask);
@@ -74,13 +77,24 @@ public class StartMovement : MonoBehaviour
             jumpRequested = false;
             MainAudioSource.PlayOneShot(slimeNoise);
         }
+        TryToDash();
 
         //Debug.Log(CheckGroundDistance()); //check if we are considered to be touching the ground, including coyote time.
         //CheckGroundDistance2(); //check raw distance.
         //Debug.Log(rb.velocity.y); //check vertical velocity.
     }
 
-    void MovePlayer()
+    void TryToDash()
+    {
+        if(!dashRequested)
+        {
+            return;
+        }
+        dashRequested = false;
+        MovePlayer(dashSpeed);
+    }
+
+    void MovePlayer(float? speedOverride = null)
     {
         if (movement.magnitude >= 0.1f)
         {
@@ -89,8 +103,9 @@ public class StartMovement : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            
-            rb.velocity = new Vector3(moveDir.x * speed, rb.velocity.y, moveDir.z * speed);
+
+            float targetSpeed = speedOverride ?? speed;
+            rb.velocity = new Vector3(moveDir.x * targetSpeed, rb.velocity.y, moveDir.z * targetSpeed);
         }
         else //DECIDE WHETHER TO KEEP MOMENTUM OR NOT!
         {
