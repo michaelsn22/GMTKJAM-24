@@ -91,7 +91,9 @@ public class StartMovement : MonoBehaviour
             return;
         }
         dashRequested = false;
-        MovePlayer(dashSpeed);
+
+        rb.velocity = new Vector3(0, 0f, 0);
+        rb.AddForce(transform.forward * dashSpeed, ForceMode.Impulse);
     }
 
     void MovePlayer(float? speedOverride = null)
