@@ -889,7 +889,7 @@ GameObject:
   - component: {fileID: 632263024}
   m_Layer: 5
   m_Name: Text (TMP)
-  m_TagString: Untagged
+  m_TagString: scoreBoard
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1023,7 +1023,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f300aa27d942cb469f748481be90a94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scoreText: {fileID: 0}
+  scoreText: {fileID: 632263022}
   score: 0
   thePlayer: {fileID: 1054688013}
 --- !u!1 &678870074
