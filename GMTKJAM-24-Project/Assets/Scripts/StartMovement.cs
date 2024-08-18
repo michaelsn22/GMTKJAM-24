@@ -20,11 +20,17 @@ public class StartMovement : MonoBehaviour
     public int score = 0;
     public bool gameOver = false;
     public float burstValueUpwards = 20f;
+    public float dashSpeed = 500f;
+    private bool canDash = true;
 
     [SerializeField] private LayerMask groundMask;
 
     private Vector3 movement;
     private bool jumpRequested = false;
+    private bool dashRequested = false;
+    private bool isDashing = false;
+    private float dashDuration = 0.2f; // Duration of the dash in seconds
+    private float dashCooldown = 2f;
 
     //scaling vars
     public float scaleIncrease = 0.3f; // 30% increase
@@ -37,6 +43,8 @@ public class StartMovement : MonoBehaviour
     //audio stuff
     [SerializeField] private AudioSource MainAudioSource;
     [SerializeField] private AudioClip slimeNoise;
+
+    [SerializeField] private Material SlimeMaterial;
 
 
     void Start()
@@ -58,6 +66,12 @@ public class StartMovement : MonoBehaviour
             jumpRequested = true;
         }
 
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)//isGrounded
+        {
+            dashRequested = true;
+        }
+        //dashRequested = !!Input.GetKeyDown(KeyCode.LeftShift);
+
         isGroundedCenter = Physics.CheckSphere(groundCheckCenter.position, groundDistance, groundMask);
         isGroundedLeft = Physics.CheckSphere(groundCheckLeft.position, groundDistance, groundMask);
         isGroundedRight = Physics.CheckSphere(groundCheckRight.position, groundDistance, groundMask);
@@ -74,13 +88,26 @@ public class StartMovement : MonoBehaviour
             jumpRequested = false;
             MainAudioSource.PlayOneShot(slimeNoise);
         }
+        TryToDash();
 
         //Debug.Log(CheckGroundDistance()); //check if we are considered to be touching the ground, including coyote time.
         //CheckGroundDistance2(); //check raw distance.
         //Debug.Log(rb.velocity.y); //check vertical velocity.
     }
 
-    void MovePlayer()
+    void TryToDash()
+    {
+        if(!dashRequested)
+        {
+            return;
+        }
+        dashRequested = false;
+        canDash = false;
+
+        StartCoroutine(DashCoroutine());
+    }
+
+    void MovePlayer(float? speedOverride = null)
     {
         if (movement.magnitude >= 0.1f)
         {
@@ -89,8 +116,9 @@ public class StartMovement : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            
-            rb.velocity = new Vector3(moveDir.x * speed, rb.velocity.y, moveDir.z * speed);
+
+            float targetSpeed = speedOverride ?? speed;
+            rb.velocity = new Vector3(moveDir.x * targetSpeed, rb.velocity.y, moveDir.z * targetSpeed);
         }
         else //DECIDE WHETHER TO KEEP MOMENTUM OR NOT!
         {
@@ -115,6 +143,11 @@ public class StartMovement : MonoBehaviour
         if (scaleCounter >= 35)
         {
             //lets just stop at this size for now...
+            Renderer PlaneRenderer = GameObject.Find("Plane").GetComponent<Renderer>();
+            PlaneRenderer.material = SlimeMaterial;
+
+            //we have won
+            mygamemanager.instance.EndGame();
             return;
         }
 
@@ -129,6 +162,8 @@ public class StartMovement : MonoBehaviour
             burstValueUpwards += 8f;
             speed += 15f;
         }
+
+
         string collidedObjectName = "";
         collidedObjectName = collision.gameObject.name;
         //Debug.Log("We collided with "+collision.gameObject.name);
@@ -142,16 +177,22 @@ public class StartMovement : MonoBehaviour
             score +=  10;
         }
 
+        // Change the material of the collided object to the slime one
+        Renderer collidedRenderer = collision.gameObject.GetComponent<Renderer>();
+        Debug.Log(collidedRenderer.material.name);
+        if (collidedRenderer != null && !collidedRenderer.material.name.Contains("Green"))
+        {
+            mygamemanager.instance.IncrementCollectedObjectCount();
+            collidedRenderer.material = SlimeMaterial;
+        }
+
         // Calculate the new scale
         Vector3 newScale = gameObject.transform.localScale * (1f + scaleIncrease);
         
         // Apply the new scale
         transform.localScale = newScale;
 
-        //Debug.Log("Object scaled up by 30%");
-
         scaleCounter++;
-        //Debug.Log("scaleCounter = "+scaleCounter);
 
         //handle cam stuff
         if (scaleCounter <= 11)
@@ -216,6 +257,7 @@ public class StartMovement : MonoBehaviour
         }
     }
 
+    //debug method
     private void CheckGroundDistance2()
     {
         RaycastHit hit;
@@ -226,15 +268,35 @@ public class StartMovement : MonoBehaviour
         }
     }
 
-    private int IsGameOver()
+    IEnumerator DashCoroutine()
     {
-        if (gameOver)
+        isDashing = true;
+
+        float elapsedTime = 0f;
+        Vector3 initialVelocity = rb.velocity; // Store the current velocity
+
+        // Optionally, you can clear the existing velocity if you want a more controlled dash
+        rb.velocity = Vector3.zero;
+
+        while (elapsedTime < dashDuration)
         {
-            return score;
+            elapsedTime += Time.fixedDeltaTime;
+
+            // Apply a portion of the dash force each frame
+            rb.AddForce(transform.forward * (dashSpeed / dashDuration) * Time.fixedDeltaTime, ForceMode.VelocityChange);
+
+            // Wait for the next FixedUpdate
+            yield return new WaitForFixedUpdate();
         }
-        else
-        {
-            return score;
-        }
+
+        // Optionally, you can restore the initial velocity or apply additional logic here
+        isDashing = false;
+
+        Invoke(nameof(DashCooldownHandler), dashCooldown);
+    }
+
+    private void DashCooldownHandler()
+    {
+        canDash = true;
     }
 }

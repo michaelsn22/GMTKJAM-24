@@ -7,10 +7,19 @@ using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
+    public static ScoreManager instance { get; private set; }
     public TextMeshProUGUI scoreText;
     public int score;
     public StartMovement thePlayer;
-    // Start is called before the first frame update
+    
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+    }
+
     void Start()
     {
         GameObject player = GameObject.Find("Player");
@@ -30,5 +39,10 @@ public class ScoreManager : MonoBehaviour
     {
         score = thePlayer.score;
         scoreText.text = "Score: " + score.ToString();
+    }
+
+    public int GetPlayerScore()
+    {
+        return score;
     }
 }
