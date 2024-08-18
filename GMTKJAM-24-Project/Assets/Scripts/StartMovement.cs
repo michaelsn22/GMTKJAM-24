@@ -145,6 +145,9 @@ public class StartMovement : MonoBehaviour
             //lets just stop at this size for now...
             Renderer PlaneRenderer = GameObject.Find("Plane").GetComponent<Renderer>();
             PlaneRenderer.material = SlimeMaterial;
+
+            //we have won
+            mygamemanager.instance.EndGame();
             return;
         }
 
@@ -252,6 +255,7 @@ public class StartMovement : MonoBehaviour
         }
     }
 
+    //debug method
     private void CheckGroundDistance2()
     {
         RaycastHit hit;
@@ -259,18 +263,6 @@ public class StartMovement : MonoBehaviour
         {
             float distanceToGround = hit.distance;
             //Debug.Log(distanceToGround);
-        }
-    }
-
-    private int IsGameOver()
-    {
-        if (gameOver)
-        {
-            return score;
-        }
-        else
-        {
-            return score;
         }
     }
 

@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class NavHandler : MonoBehaviour
 {
+    void Start()
+    {
+        Time.timeScale = 1f;
+    }
     public void GoToLevelOne()
     {
         SceneManager.LoadScene("SampleScene");
@@ -19,5 +23,11 @@ public class NavHandler : MonoBehaviour
     {
         Debug.Log("closing game");
         Application.Quit();
+    }
+
+    public void GoToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("Menu");
     }
 }
