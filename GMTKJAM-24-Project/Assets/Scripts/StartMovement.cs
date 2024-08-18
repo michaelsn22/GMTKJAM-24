@@ -21,6 +21,7 @@ public class StartMovement : MonoBehaviour
     public bool gameOver = false;
     public float burstValueUpwards = 20f;
     public float dashSpeed = 500f;
+    private bool canDash = true;
 
     [SerializeField] private LayerMask groundMask;
 
@@ -29,6 +30,7 @@ public class StartMovement : MonoBehaviour
     private bool dashRequested = false;
     private bool isDashing = false;
     private float dashDuration = 0.2f; // Duration of the dash in seconds
+    private float dashCooldown = 2f;
 
     //scaling vars
     public float scaleIncrease = 0.3f; // 30% increase
@@ -62,7 +64,7 @@ public class StartMovement : MonoBehaviour
             jumpRequested = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))//isGrounded
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)//isGrounded
         {
             dashRequested = true;
         }
@@ -98,6 +100,7 @@ public class StartMovement : MonoBehaviour
             return;
         }
         dashRequested = false;
+        canDash = false;
 
         StartCoroutine(DashCoroutine());
     }
@@ -284,5 +287,12 @@ public class StartMovement : MonoBehaviour
 
         // Optionally, you can restore the initial velocity or apply additional logic here
         isDashing = false;
+
+        Invoke(nameof(DashCooldownHandler), dashCooldown);
+    }
+
+    private void DashCooldownHandler()
+    {
+        canDash = true;
     }
 }
