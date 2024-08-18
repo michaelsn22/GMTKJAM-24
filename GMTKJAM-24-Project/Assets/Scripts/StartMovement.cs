@@ -44,6 +44,8 @@ public class StartMovement : MonoBehaviour
     [SerializeField] private AudioSource MainAudioSource;
     [SerializeField] private AudioClip slimeNoise;
 
+    [SerializeField] private Material SlimeMaterial;
+
 
     void Start()
     {
@@ -141,6 +143,8 @@ public class StartMovement : MonoBehaviour
         if (scaleCounter >= 35)
         {
             //lets just stop at this size for now...
+            Renderer PlaneRenderer = GameObject.Find("Plane").GetComponent<Renderer>();
+            PlaneRenderer.material = SlimeMaterial;
             return;
         }
 
@@ -155,6 +159,8 @@ public class StartMovement : MonoBehaviour
             burstValueUpwards += 8f;
             speed += 15f;
         }
+
+
         string collidedObjectName = "";
         collidedObjectName = collision.gameObject.name;
         //Debug.Log("We collided with "+collision.gameObject.name);
@@ -168,16 +174,20 @@ public class StartMovement : MonoBehaviour
             score +=  10;
         }
 
+        // Change the material of the collided object to the slime one
+        Renderer collidedRenderer = collision.gameObject.GetComponent<Renderer>();
+        if (collidedRenderer != null)
+        {
+            collidedRenderer.material = SlimeMaterial;
+        }
+
         // Calculate the new scale
         Vector3 newScale = gameObject.transform.localScale * (1f + scaleIncrease);
         
         // Apply the new scale
         transform.localScale = newScale;
 
-        //Debug.Log("Object scaled up by 30%");
-
         scaleCounter++;
-        //Debug.Log("scaleCounter = "+scaleCounter);
 
         //handle cam stuff
         if (scaleCounter <= 11)
