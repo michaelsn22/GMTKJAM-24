@@ -179,8 +179,10 @@ public class StartMovement : MonoBehaviour
 
         // Change the material of the collided object to the slime one
         Renderer collidedRenderer = collision.gameObject.GetComponent<Renderer>();
-        if (collidedRenderer != null)
+        Debug.Log(collidedRenderer.material.name);
+        if (collidedRenderer != null && !collidedRenderer.material.name.Contains("Green"))
         {
+            mygamemanager.instance.IncrementCollectedObjectCount();
             collidedRenderer.material = SlimeMaterial;
         }
 

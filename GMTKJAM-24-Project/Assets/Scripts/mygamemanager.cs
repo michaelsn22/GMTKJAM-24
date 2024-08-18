@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class mygamemanager : MonoBehaviour
 {
@@ -15,6 +16,12 @@ public class mygamemanager : MonoBehaviour
 
     private float TimeToBeat = 120f;
     private float remainingTime = 120f;
+
+    private int TotalObjectsToCollect = 0; //total obj to turn to slime for a given level
+    private int currentCollectedCount = 0;
+
+    //GUI stuff
+    [SerializeField] private TextMeshProUGUI TimeCountdownUI;
 
     private void Awake()
     {
@@ -31,6 +38,15 @@ public class mygamemanager : MonoBehaviour
 
         // Make the cursor invisible
         Cursor.visible = false;
+
+        if (SceneManager.GetActiveScene().name == "SampleScene")
+        {
+            //the time alloted for the level.
+            TimeToBeat = 25f;
+
+            //total objects needed to turn into slime
+            TotalObjectsToCollect = 6;
+        }
     }
 
     void Update()
@@ -38,6 +54,9 @@ public class mygamemanager : MonoBehaviour
         timeKeeper += Time.deltaTime;
 
         remainingTime = TimeToBeat - timeKeeper;
+
+        //TimeCountdownUI.text = "Time Remaining: "+remainingTime;
+        TimeCountdownUI.text = string.Format("Remaining Time: {0:0.00}", remainingTime);
 
         if (remainingTime <= 0f)
         {
@@ -61,7 +80,7 @@ public class mygamemanager : MonoBehaviour
 
                 //update the text on the scoreboard to the correct values.
                 scoreText.text = "Score: "+ScoreManager.instance.GetPlayerScore();
-                timeRemainingText.text = "Time Left: "+remainingTime;
+                timeRemainingText.text = string.Format("Time Left: {0:0.00}s", remainingTime);
             }
         }
 
@@ -70,5 +89,15 @@ public class mygamemanager : MonoBehaviour
     public void EndGame()
     {
         isGameOver = true;
+    }
+
+    public void IncrementCollectedObjectCount()
+    {
+        currentCollectedCount++;
+
+        if (currentCollectedCount >= TotalObjectsToCollect)
+        {
+            EndGame();
+        }
     }
 }
