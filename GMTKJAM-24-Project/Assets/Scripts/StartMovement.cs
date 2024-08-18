@@ -27,6 +27,8 @@ public class StartMovement : MonoBehaviour
     private Vector3 movement;
     private bool jumpRequested = false;
     private bool dashRequested = false;
+    private bool isDashing = false;
+    private float dashDuration = 0.2f; // Duration of the dash in seconds
 
     //scaling vars
     public float scaleIncrease = 0.3f; // 30% increase
@@ -59,7 +61,12 @@ public class StartMovement : MonoBehaviour
         {
             jumpRequested = true;
         }
-        dashRequested = !!Input.GetKeyDown(KeyCode.LeftShift);
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))//isGrounded
+        {
+            dashRequested = true;
+        }
+        //dashRequested = !!Input.GetKeyDown(KeyCode.LeftShift);
 
         isGroundedCenter = Physics.CheckSphere(groundCheckCenter.position, groundDistance, groundMask);
         isGroundedLeft = Physics.CheckSphere(groundCheckLeft.position, groundDistance, groundMask);
@@ -92,8 +99,7 @@ public class StartMovement : MonoBehaviour
         }
         dashRequested = false;
 
-        rb.velocity = new Vector3(0, 0f, 0);
-        rb.AddForce(transform.forward * dashSpeed, ForceMode.Impulse);
+        StartCoroutine(DashCoroutine());
     }
 
     void MovePlayer(float? speedOverride = null)
@@ -253,5 +259,30 @@ public class StartMovement : MonoBehaviour
         {
             return score;
         }
+    }
+
+    IEnumerator DashCoroutine()
+    {
+        isDashing = true;
+
+        float elapsedTime = 0f;
+        Vector3 initialVelocity = rb.velocity; // Store the current velocity
+
+        // Optionally, you can clear the existing velocity if you want a more controlled dash
+        rb.velocity = Vector3.zero;
+
+        while (elapsedTime < dashDuration)
+        {
+            elapsedTime += Time.fixedDeltaTime;
+
+            // Apply a portion of the dash force each frame
+            rb.AddForce(transform.forward * (dashSpeed / dashDuration) * Time.fixedDeltaTime, ForceMode.VelocityChange);
+
+            // Wait for the next FixedUpdate
+            yield return new WaitForFixedUpdate();
+        }
+
+        // Optionally, you can restore the initial velocity or apply additional logic here
+        isDashing = false;
     }
 }
