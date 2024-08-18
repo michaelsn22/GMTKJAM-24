@@ -418,6 +418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PauseMenu: {fileID: 0}
   EndScoreboard: {fileID: 727496924}
+  scoreBoardTitle: {fileID: 1149963402}
   scoreText: {fileID: 881925247}
   timeRemainingText: {fileID: 2059780515}
   TimeCountdownUI: {fileID: 1520498780}
