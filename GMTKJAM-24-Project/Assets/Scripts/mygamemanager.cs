@@ -9,6 +9,7 @@ public class mygamemanager : MonoBehaviour
     public static mygamemanager instance { get; private set; }
     [SerializeField] private GameObject PauseMenu;
     [SerializeField] private GameObject EndScoreboard;
+    [SerializeField] private TextMeshProUGUI scoreBoardTitle;
     private bool isGameOver = false;
     private float timeKeeper;
     [SerializeField] private TextMeshProUGUI scoreText;
@@ -61,6 +62,18 @@ public class mygamemanager : MonoBehaviour
         if (remainingTime <= 0f)
         {
             Debug.Log("you lose!");
+            remainingTime = 0f;
+            scoreBoardTitle.text = "You Lose!";
+            EndScoreboard.SetActive(true);
+            //Unlock the cursor
+            Cursor.lockState = CursorLockMode.None;
+
+            //Make the cursor visible again
+            Cursor.visible = true;
+            
+            scoreText.text = "Score: "+ScoreManager.instance.GetPlayerScore();
+            timeRemainingText.text = string.Format("Time Left: {0:0.00}s", remainingTime);
+            Time.timeScale = 0f;
         }
 
         if (isGameOver)
@@ -77,6 +90,7 @@ public class mygamemanager : MonoBehaviour
             if (!EndScoreboard.activeInHierarchy)
             {
                 EndScoreboard.SetActive(true);
+                scoreBoardTitle.text = "You Won!";
 
                 //update the text on the scoreboard to the correct values.
                 scoreText.text = "Score: "+ScoreManager.instance.GetPlayerScore();
