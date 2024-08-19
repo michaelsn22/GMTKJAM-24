@@ -28,7 +28,6 @@ public class ScoreManager : MonoBehaviour
         }
 
         GameObject player = GameObject.Find("Player");
-        //GameObject scoreBoard = GameObject.FindWithTag("scoreBoard");
         thePlayer = player.GetComponent<StartMovement>();
         score = thePlayer.score;
     }
