@@ -10,6 +10,8 @@ public class mygamemanager : MonoBehaviour
     [SerializeField] private GameObject PauseMenu;
     [SerializeField] private GameObject EndScoreboard;
     [SerializeField] private TextMeshProUGUI scoreBoardTitle;
+    [SerializeField] private GameObject nextLevelButton;
+    [SerializeField] private GameObject retryButton;
     private bool isGameOver = false;
     private float timeKeeper;
     [SerializeField] private TextMeshProUGUI scoreText;
@@ -48,6 +50,16 @@ public class mygamemanager : MonoBehaviour
             //total objects needed to turn into slime
             TotalObjectsToCollect = 6;
         }
+        else if(SceneManager.GetActiveScene().name == "SampleScene1")
+        {
+            //the time alloted for the level.
+            TimeToBeat = 30f;
+
+            //total objects needed to turn into slime
+            TotalObjectsToCollect = 12;
+        }
+
+        
     }
 
     void Update()
@@ -62,6 +74,8 @@ public class mygamemanager : MonoBehaviour
         if (remainingTime <= 0f)
         {
             Debug.Log("you lose!");
+            nextLevelButton.SetActive(false);
+            retryButton.SetActive(true);
             remainingTime = 0f;
             scoreBoardTitle.text = "You Lose!";
             EndScoreboard.SetActive(true);
@@ -89,6 +103,9 @@ public class mygamemanager : MonoBehaviour
 
             if (!EndScoreboard.activeInHierarchy)
             {
+                nextLevelButton.SetActive(true);
+                retryButton.SetActive(false);
+
                 EndScoreboard.SetActive(true);
                 scoreBoardTitle.text = "You Won!";
 
