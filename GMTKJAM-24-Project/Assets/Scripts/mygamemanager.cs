@@ -99,6 +99,11 @@ public class mygamemanager : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            HandlePauseMenu();
+        }
+
     }
 
     public void EndGame()
@@ -147,5 +152,28 @@ public class mygamemanager : MonoBehaviour
                 TotalObjectsToCollect = 13;
                 break;
         }
+    }
+
+    public void HandlePauseMenu()
+    {
+        if (PauseMenu.activeInHierarchy)
+        {
+            PauseMenu.SetActive(false);
+            Time.timeScale = 1f;
+            // Lock the cursor
+            Cursor.lockState = CursorLockMode.Locked;
+
+            // Make the cursor invisible
+            Cursor.visible = false;
+            
+            return;
+        }
+        PauseMenu.SetActive(true);
+        Time.timeScale = 0f;
+        //Unlock the cursor
+        Cursor.lockState = CursorLockMode.None;
+
+        //Make the cursor visible again
+        Cursor.visible = true;
     }
 }
