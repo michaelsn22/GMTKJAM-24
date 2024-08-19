@@ -19,6 +19,10 @@ public class SoundManager : MonoBehaviour
     private float lastActionTime = 0f;
     private float lastDecayTime = 0f;
 
+    //attempt to solve double blending coroutine bug.
+    private bool isBlending = false;
+    private Coroutine blendCoroutine;
+
     void Start()
     {
         // Start playing the first track
@@ -52,9 +56,10 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void BlendToTrack(int newTrackIndex) //call this whenever we need to blend to the next track
+    public void BlendToTrack(int newTrackIndex)
     {
-        if (newTrackIndex == currentTrack) return;
+        // If we're already blending or the new track is the same as the current, do nothing
+        if (isBlending || newTrackIndex == currentTrack) return;
 
         float currentTime = audioSources[currentTrack].time;
         
@@ -62,13 +67,21 @@ public class SoundManager : MonoBehaviour
         audioSources[newTrackIndex].time = currentTime;
         audioSources[newTrackIndex].Play();
 
-        StartCoroutine(CrossfadeTracks(currentTrack, newTrackIndex));
+        // Stop any existing blend coroutine
+        if (blendCoroutine != null)
+        {
+            StopCoroutine(blendCoroutine);
+        }
+
+        // Start a new blend coroutine
+        blendCoroutine = StartCoroutine(CrossfadeTracks(currentTrack, newTrackIndex));
         
         currentTrack = newTrackIndex;
     }
 
     private IEnumerator CrossfadeTracks(int oldTrackIndex, int newTrackIndex)
     {
+        isBlending = true;
         float timeElapsed = 0f;
 
         while (timeElapsed < crossfadeDuration)
@@ -84,6 +97,9 @@ public class SoundManager : MonoBehaviour
         audioSources[oldTrackIndex].Stop();
         audioSources[oldTrackIndex].volume = 0;
         audioSources[newTrackIndex].volume = 1;
+
+        isBlending = false;
+        blendCoroutine = null;
     }
 
     public void IncrementCounter(float incrementAmount = 1f)
@@ -127,11 +143,11 @@ public class SoundManager : MonoBehaviour
         {
             BlendToTrack(0); // Assuming track 0 is your base track
         }
-        else if (currentActionCounter >= 2 && currentActionCounter < 5)
+        else if (currentActionCounter >= 2 && currentActionCounter < 8)
         {
             BlendToTrack(1);
         }
-        else if (currentActionCounter >= 5 && currentActionCounter < 14)
+        else if (currentActionCounter >= 8 && currentActionCounter < 14)
         {
             BlendToTrack(2);
         }
