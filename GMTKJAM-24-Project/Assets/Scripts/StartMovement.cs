@@ -77,6 +77,11 @@ public class StartMovement : MonoBehaviour
         isGroundedRight = Physics.CheckSphere(groundCheckRight.position, groundDistance, groundMask);
 
         isGrounded = isGroundedCenter || isGroundedLeft || isGroundedRight;
+
+        if (Input.GetKeyDown(KeyCode.R))//isGrounded
+        {
+            GameObject.Find("MenuNav").GetComponent<NavHandler>().RetrySameLevel();
+        }
     }
 
     void FixedUpdate()
@@ -140,6 +145,7 @@ public class StartMovement : MonoBehaviour
         
         MainAudioSource.PlayOneShot(slimeNoise);
 
+
         if (scaleCounter >= 35)
         {
             //lets just stop at this size for now...
@@ -175,6 +181,17 @@ public class StartMovement : MonoBehaviour
         else
         {
             score +=  10;
+
+            if (collidedObjectName.Contains("Bounce"))
+            {
+                rb.velocity = new Vector3(0, 0f, 0);
+                rb.AddForce(transform.up * burstValueUpwards, ForceMode.Impulse);
+
+                canDash = true;
+
+                collision.gameObject.GetComponent<Rigidbody>().useGravity = true;
+                collision.gameObject.GetComponent<Collider>().enabled = false;
+            }
         }
 
         // Change the material of the collided object to the slime one

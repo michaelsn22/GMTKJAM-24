@@ -25,6 +25,7 @@ public class mygamemanager : MonoBehaviour
 
     //GUI stuff
     [SerializeField] private TextMeshProUGUI TimeCountdownUI;
+    public bool fellOffMap = false;
 
     private void Awake()
     {
@@ -58,6 +59,22 @@ public class mygamemanager : MonoBehaviour
             //total objects needed to turn into slime
             TotalObjectsToCollect = 12;
         }
+        else if(SceneManager.GetActiveScene().name == "Map3")
+        {
+            //the time alloted for the level.
+            TimeToBeat = 20f;
+
+            //total objects needed to turn into slime
+            TotalObjectsToCollect = 6;
+        }
+        else if(SceneManager.GetActiveScene().name == "Map4")
+        {
+            //the time alloted for the level.
+            TimeToBeat = 30f;
+
+            //total objects needed to turn into slime
+            TotalObjectsToCollect = 9;
+        }
 
         
     }
@@ -71,7 +88,7 @@ public class mygamemanager : MonoBehaviour
         //TimeCountdownUI.text = "Time Remaining: "+remainingTime;
         TimeCountdownUI.text = string.Format("Remaining Time: {0:0.00}", remainingTime);
 
-        if (remainingTime <= 0f)
+        if (remainingTime <= 0f || fellOffMap)
         {
             Debug.Log("you lose!");
             nextLevelButton.SetActive(false);
