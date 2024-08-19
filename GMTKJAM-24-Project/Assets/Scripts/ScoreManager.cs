@@ -22,14 +22,12 @@ public class ScoreManager : MonoBehaviour
 
     void Start()
     {
-        GameObject player = GameObject.Find("Player");
         if(thePlayer == null)
         {
             Debug.Log("Player doesn't exit");
         }
 
         GameObject player = GameObject.Find("Player");
-        //GameObject scoreBoard = GameObject.FindWithTag("scoreBoard");
         thePlayer = player.GetComponent<StartMovement>();
         score = thePlayer.score;
     }
