@@ -62,7 +62,7 @@ public class mygamemanager : MonoBehaviour
         else if(SceneManager.GetActiveScene().name == "Map3")
         {
             //the time alloted for the level.
-            TimeToBeat = 20f;
+            TimeToBeat = 15f;
 
             //total objects needed to turn into slime
             TotalObjectsToCollect = 6;
@@ -70,10 +70,18 @@ public class mygamemanager : MonoBehaviour
         else if(SceneManager.GetActiveScene().name == "Map4")
         {
             //the time alloted for the level.
-            TimeToBeat = 30f;
+            TimeToBeat = 22f;
 
             //total objects needed to turn into slime
             TotalObjectsToCollect = 9;
+        }
+        else if(SceneManager.GetActiveScene().name == "Map5")
+        {
+            //the time alloted for the level.
+            TimeToBeat = 16f;
+
+            //total objects needed to turn into slime
+            TotalObjectsToCollect = 11;
         }
 
         
