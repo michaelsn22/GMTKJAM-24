@@ -211,6 +211,9 @@ public class StartMovement : MonoBehaviour
 
         scaleCounter++;
 
+        //tell AudioManager we have a new scaleCounter value.
+        SoundManager.instance.IncrementCounter();
+
         //handle cam stuff
         if (scaleCounter <= 11)
         {
