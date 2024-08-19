@@ -42,49 +42,8 @@ public class mygamemanager : MonoBehaviour
 
         // Make the cursor invisible
         Cursor.visible = false;
+        MapSelector();
 
-        if (SceneManager.GetActiveScene().name == "SampleScene")
-        {
-            //the time alloted for the level.
-            TimeToBeat = 25f;
-
-            //total objects needed to turn into slime
-            TotalObjectsToCollect = 6;
-        }
-        else if(SceneManager.GetActiveScene().name == "SampleScene1")
-        {
-            //the time alloted for the level.
-            TimeToBeat = 30f;
-
-            //total objects needed to turn into slime
-            TotalObjectsToCollect = 12;
-        }
-        else if(SceneManager.GetActiveScene().name == "Map3")
-        {
-            //the time alloted for the level.
-            TimeToBeat = 15f;
-
-            //total objects needed to turn into slime
-            TotalObjectsToCollect = 6;
-        }
-        else if(SceneManager.GetActiveScene().name == "Map4")
-        {
-            //the time alloted for the level.
-            TimeToBeat = 22f;
-
-            //total objects needed to turn into slime
-            TotalObjectsToCollect = 9;
-        }
-        else if(SceneManager.GetActiveScene().name == "Map5")
-        {
-            //the time alloted for the level.
-            TimeToBeat = 16f;
-
-            //total objects needed to turn into slime
-            TotalObjectsToCollect = 11;
-        }
-
-        
     }
 
     void Update()
@@ -154,6 +113,43 @@ public class mygamemanager : MonoBehaviour
         if (currentCollectedCount >= TotalObjectsToCollect)
         {
             EndGame();
+        }
+    }
+
+    private void MapSelector()
+    {
+
+        switch(SceneManager.GetActiveScene().name)
+        {
+            case "SampleScene":
+                TimeToBeat = 25f;
+                TotalObjectsToCollect = 6;
+                break;
+
+            case "SampleScene1":
+                TimeToBeat = 30f;
+                TotalObjectsToCollect = 12;
+                break;
+
+            case "Map3":
+                TimeToBeat = 15f;
+                TotalObjectsToCollect = 6;
+                break;
+            
+            case "Map4":
+                TimeToBeat = 22f;
+                TotalObjectsToCollect = 9;
+                break;
+
+            case "Map5":
+                TimeToBeat = 16f;
+                TotalObjectsToCollect = 11;
+                break;
+
+            case "Map6":
+                TimeToBeat = 22f;
+                TotalObjectsToCollect = 14;
+                break;
         }
     }
 }
