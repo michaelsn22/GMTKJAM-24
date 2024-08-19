@@ -109,6 +109,7 @@ public class mygamemanager : MonoBehaviour
     public void IncrementCollectedObjectCount()
     {
         currentCollectedCount++;
+        //Debug.Log(currentCollectedCount);
 
         if (currentCollectedCount >= TotalObjectsToCollect)
         {
@@ -122,13 +123,8 @@ public class mygamemanager : MonoBehaviour
         switch(SceneManager.GetActiveScene().name)
         {
             case "SampleScene":
-                TimeToBeat = 25f;
-                TotalObjectsToCollect = 6;
-                break;
-
-            case "SampleScene1":
                 TimeToBeat = 30f;
-                TotalObjectsToCollect = 12;
+                TotalObjectsToCollect = 6;
                 break;
 
             case "Map3":
@@ -147,8 +143,8 @@ public class mygamemanager : MonoBehaviour
                 break;
 
             case "Map6":
-                TimeToBeat = 22f;
-                TotalObjectsToCollect = 14;
+                TimeToBeat = 19f;
+                TotalObjectsToCollect = 13;
                 break;
         }
     }

@@ -23,5 +23,7 @@ public class KickableObject : MonoBehaviour
         {
             collidedRenderer.material = SlimeMaterial;
         }
+
+        GetComponent<Collider>().enabled = false; //have to add this line or the object kicked can gain multiple points lol
     }
 }
