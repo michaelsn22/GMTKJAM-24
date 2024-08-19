@@ -147,8 +147,8 @@ public class mygamemanager : MonoBehaviour
                 break;
 
             case "Map6":
-                TimeToBeat = 20f;
-                TotalObjectsToCollect = 11;
+                TimeToBeat = 22f;
+                TotalObjectsToCollect = 14;
                 break;
         }
     }
